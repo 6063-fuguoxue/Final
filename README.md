@@ -9,7 +9,7 @@ The inspiration for this project comes from two memes I found online:
 | Meme 1      | Meme 2 |
 | ----------- | ----------- |
 | ![](./imgs/idea1-meme1.jpg)      | ![](./imgs/idea1-meme2.jpg)      |
-| The flower says "Please be friends with me. "   | The flower says "Please chat with me. "        |
+| The flower says "Please be my friend. "   | The flower says "Please chat with me. "        |
 
 I somehow resonate with the flowers in the memes. I always want to make new friends and chat with people, but I can be very introvert sometimes and don't know how to start a conversation. Therefore, I am wondering if a machine can act as a medium to have a conversation with even a stranger I've never met before. Below is my ideation of the project. 
 
