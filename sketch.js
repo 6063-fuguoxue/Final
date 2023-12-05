@@ -7,6 +7,7 @@ let readyToReceive;
 
 // project variables
 let bgColor=10;
+let choiceSlider;
 
 function receiveSerial() {
   let line = mSerial.readUntil("\n");
@@ -24,7 +25,8 @@ function receiveSerial() {
   let a0 = data.A0;
 
   // use data to update project variables
-  bgColor = map(a0.value, 0, 4095, 0, 255);
+  // bgColor = map(a0.value, 0, 4095, 0, 255); //a0.min and a0.max somehow don't work here
+  choiceSlider.value(floor(map(a0.value, 0, 4095, 0, 11)));
 
   // serial update
   readyToReceive = true;
@@ -72,6 +74,9 @@ function setup() {
   connectButton = createButton("Connect To Serial");
   connectButton.position(width / 2, height / 2);
   connectButton.mousePressed(connectToSerial);
+
+  choiceSlider = createSlider(0, 10, 5, 1);
+  choiceSlider.position(width / 2, height / 4*3);
 }
 
 function modelReady() {
@@ -163,6 +168,7 @@ function drawPart(feature, closed) {
 
 function drawOthers() {
   // project logic
+
 
   // update serial: request new data
   if (mSerial.opened() && readyToReceive) {
