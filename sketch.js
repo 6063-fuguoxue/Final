@@ -80,7 +80,7 @@ function modelReady() {
   faceapi.detect(gotResults);
 }
 
-// Since the function is basically calling itself, it in fact functions as "draw()"
+// Since the function is iterative, it in fact functions as "draw()"
 function gotResults(err, result) {
   if (err) {
     console.log(err);
@@ -89,29 +89,22 @@ function gotResults(err, result) {
   // console.log(result)
   detections = result;
 
-  // background(220);
   background(bgColor);
   // image(video, 0, 0, width, height); // Comment out to avoid showing the webcam video
   if (detections) {
     if (detections.length > 0) {
       // console.log(detections)
+      push();
+      translate(width,0);
+      scale(-1, 1);
       drawBox(detections);
       drawLandmarks(detections);
+      pop();
     }
   }
-  // project logic
-  // background(bgColor);
-  // update serial: request new data
-  if (mSerial.opened() && readyToReceive) {
-    readyToReceive = false;
-    mSerial.clear();
-    mSerial.write(0xab);
-  }
 
-  // update serial: read new data
-  if (mSerial.availableBytes() > 8) {
-    receiveSerial();
-  }
+  drawOthers(); // Put other project logic in drawOthers() function
+  
 
   faceapi.detect(gotResults);
 }
@@ -165,6 +158,22 @@ function drawPart(feature, closed) {
     endShape(CLOSE);
   } else {
     endShape();
+  }
+}
+
+function drawOthers() {
+  // project logic
+
+  // update serial: request new data
+  if (mSerial.opened() && readyToReceive) {
+    readyToReceive = false;
+    mSerial.clear();
+    mSerial.write(0xab);
+  }
+
+  // update serial: read new data
+  if (mSerial.availableBytes() > 8) {
+    receiveSerial();
   }
 }
 
