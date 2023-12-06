@@ -48,3 +48,94 @@ As the weather is getting cold in New York and the temperature difference within
 When a person gets close to the interface, it will light up and show weather information. This can be achieved by a sensor controlled by an Arduino board. The interface will recognize my gesture of swiping left or right to show me the past or future temperature. This can be achieved by ml5.js library. As for fetching and processing the real-time weather data, I found tutorials like [this one](https://www.youtube.com/watch?v=PhDPnjF3_tA) helpful. 
 
 The Weather APP on iPhones can be a good reference for what information to include in my Weather Board. 
+
+## Milestone 2: Project Proposal, Planning and Organizing
+
+This week, I further developed the Friendly Printer idea. However, I renamed it to Music Printer and designed it to collaborate with the player to create a music piece. By controlling a potentiometer and two buttons, the player can write music notes. The installation will also randomly generate notes so that the result is a human-machine collaboration. 
+
+The notes will be displayed in two forms: as geometric shapes on the screen and printed out via a thermal printer.
+
+![](./imgs/ms2-sketch1.jpg)
+
+![](./imgs/ms2-sketch2.jpg)
+
+![](./imgs/ms2-sketch3.jpg)
+
+### Discussions about the project idea
+
+The Music Printer is an installation that invites people to collaborate with machines. This human-machine cooperation is important to me as many of my projects cannot come true without machines, algorithms, etc. Moreover, this installation will carry my self-expression. I like music, chatting, meeting new friends, and bringing joy to others, which are what the installation will do when interacting with players. 
+
+The installation can also be related to our previous readings. Douglas Rushkoff may see the installation as a modeled reality because I will use MIDI music to produce chords. Chris Crawford might think of the installation as interactive but not highly interactive. I think the Music Printer will not be "thinking" -- it will just "listen" and "speak" in the language it can understand. On the other hand, players as humans will "listen to" and think about the information provided, and "speak" to the machine in terms of actions. 
+
+### System Diagram
+
+![](./imgs/system-diagram.png)
+
+### FSM Diagram
+
+![](./imgs/fsm.png)
+
+### Circuit Diagram
+
+![](./imgs/circuit-diagram.jpg)
+
+### External Data / Libraries
+
+So far I don't see the need for external data, but I will use the external libraries below: 
+
+#### p5.js libraries
+* p5.sound library for MIDI notes playing. 
+* ml5.js library for face detection and face landmark drawing. 
+* p5.Polar for creating beautiful polar backgrounds, which can also be interactive. 
+
+#### Arduino libraries
+* ArduinoJson library for serial communication between p5.js and Arduino. 
+* Adafruit Thermal Printer library for thermal printer control.
+
+### Input and Output
+* Devices/components for input: webcam * 1, potentiometer * 1, button * 2
+* Devices/components for output: monitor * 1, thermal printer * 1
+
+I was planning to use an ultrasonic sensor for player detection around the installation, but it only works with 5V power (the highest power available from Arduino Nano ESP32 is 3.3V). Therefore, currently I don't plan to use sensors in my project. 
+
+### Project planning
+
+Since I went to CMU for the "art && code" workshop at CMU last weekend, I didn't get much time to work on the coding of the Music Printer. However, I have bought a thermal printer, a suitable AC-to-DC converter for powering the printer, and thermal paper for printing. I also have achieved serial communication between p5.js and Arduino. Below is my plan for the upcoming week: 
+
+| Deadline      | Task |
+| ----------- | ----------- |
+| 12/10/2023 | Finish the logic in p5.js |
+| 12/13/2023 | Finish thermal printer testing |
+
+If I can finish the tasks above, I should be able to do user testing and project iterations by 12/20/2023, our presentation date. 
+
+#### Back-up plans
+I have spent a lot of time this week trying to integrate Hydra into p5.js sketch but failed. If I have enough time later, I will try again on that. Otherwise, p5.Polar seems a good option, too. 
+
+If I cannot work out the thermal printer, I will focus on refining the music logic and the digital effects on the screen. 
+
+### References and Resource
+**Face API**: 
+* https://editor.p5js.org/rios/sketches/QH1ch5GFr
+
+**Thermal printer tutorial**: 
+* https://blog.arduino.cc/2023/05/20/control-a-thermal-printer-with-your-arduino/
+
+**Artwork using thermal printer**: 
+* https://vimeo.com/33698229
+* https://hackaday.com/2020/10/03/receipt-printers-end-it-all-in-moving-art-piece/
+
+**Interactive Hydra coding pieces (coded by myself)**: 
+* [Flowers](https://hydra.ojack.xyz/?showCode=false&code=JTJGJTJGJTIwZ3JhZGllbnQlMjBzZXF1ZW5jZSUyMGF0JTIwc3BlZWRzJTIwb2YlMjAxJTJDJTIwMiUyMCUyNiUyMDQlMEElMEFzMC5pbml0Q2FtKCklMEFzcmMoczApLnBpeGVsYXRlKDIwJTJDMjApLmthbGVpZCgxMCkuY29sb3IoMSUyQyUyMDElMkMlMjAwLjgpLnJlcGVhdCgpLm91dCgpJTBBcmVuZGVyKG8wKQ%3D%3D)
+* [Geometry](https://hydra.ojack.xyz/?showCode=false&code=JTBBczAuaW5pdENhbSgpJTBBJTBBc3JjKHMwKS5waXhlbGF0ZSgxKS5jb2xvcigwLjglMkMlMjAwJTJDJTIwMC44KS5yb3RhdGUoMSUyQyUyMDAuMSkucmVwZWF0KCkub3V0KG8wKSUwQSUwQXZvcm9ub2koNSUyQzAuMyUyQzAuMykudGhyZXNoKDAuNSUyQzAuMDQpLm91dChvMSklMEFzcmMobzApLmRpZmYobzElMkMlMjAyKS5vdXQobzIpJTBBJTBBcmVuZGVyKG8yKSUwQSUwQQ%3D%3D)
+* [Lake Surface](https://hydra.ojack.xyz/?showCode=false&code=JTBBczAuaW5pdENhbSgwKSUwQSUwQXNyYyhzMCkub3V0KG8wKSUwQSUwQW9zYygzMCkua2FsZWlkKCkucGl4ZWxhdGUoKS5vdXQobzEpJTBBJTBBc3JjKG8wKS5tb2R1bGF0ZShvMSUyQyUyMDAuMSkub3V0KG8yKSUwQSUwQXJlbmRlcihvMiklMEElMEE%3D)
+* [Artificial Desert](https://hydra.ojack.xyz/?showCode=false&code=JTBBJTIwJTBBczAuaW5pdENhbSgpJTBBJTBBc3JjKHMwKS5ibGVuZChvMCUyQyUyMDAuOTYpJTBBLmNvbnRyYXN0KDEuMDIpJTBBLnNhdHVyYXRlKDEuMDIpJTBBJTJGJTJGJTIwLnNjYWxlKDEuMDEpJTBBLm1vZHVsYXRlKG8wJTJDJTIwMC4wMDYpJTBBLm91dChvMCklMEElMEFyZW5kZXIobzAp)
+
+**How to use Hydra in p5.js project**: 
+
+* https://editor.p5js.org/ffd8/sketches/1_Nk1IPF4
+
+* https://editor.p5js.org/micuat/sketches/jy5R67ntn
+
+* https://www.npmjs.com/package/hydra-synth
+
