@@ -51,6 +51,7 @@ function connectToSerial() {
 let faceapi;
 let video;
 let detections;
+let prevDetectionsLeng;
 
 // by default all options are set to true
 const detectionOptions = {
@@ -95,6 +96,7 @@ function gotResults(err, result) {
   }
   // console.log(result)
   detections = result;
+  // console.log(detections.length);
 
   background(bgColor);
   // image(video, 0, 0, width, height); // Comment out to avoid showing the webcam video
@@ -176,7 +178,20 @@ function drawOthers() {
   if (mSerial.opened() && readyToReceive) {
     readyToReceive = false;
     mSerial.clear();
-    mSerial.write(0xab);
+    
+    
+    if (detections.length && prevDetectionsLeng == 0) {     
+      mSerial.write(1);
+      mSerial.write(0xab);
+    } else if (detections.length == 0 && prevDetectionsLeng) {
+      mSerial.write(0);
+      mSerial.write(0xab);
+    } else {      
+      mSerial.write(0xab);
+      console.log(0xab);
+    }
+    prevDetectionsLeng = detections.length;
+    
   }
 
   // update serial: read new data

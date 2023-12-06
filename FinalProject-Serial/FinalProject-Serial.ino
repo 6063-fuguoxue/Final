@@ -9,6 +9,8 @@ int d2Val = 0;
 int d3ClickCount = 0;
 int d3Val = 0;
 
+const int ledPin = 4;
+
 int prevD3Val = 0;
 
 void sendData() {
@@ -33,6 +35,7 @@ void setup() {
   // Serial setup
   Serial.begin(9600);
   while (!Serial) {}
+  pinMode(ledPin, OUTPUT);
 }
 
 void loop() {
@@ -54,6 +57,10 @@ void loop() {
     if (byteIn == 0xAB) {
       Serial.flush();
       sendData();
+    } else if (byteIn == 1) {
+      digitalWrite(ledPin, HIGH);
+    } else if (byteIn == 0){
+      digitalWrite(ledPin, LOW);
     }
   }
 
