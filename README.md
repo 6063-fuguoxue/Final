@@ -63,7 +63,9 @@ The notes will be displayed in two forms: as geometric shapes on the screen and 
 
 ### Discussions about the project idea
 
-The Music Printer is an installation that invites people to collaborate with machines. This human-machine cooperation is important to me as many of my projects cannot come true without machines, algorithms, etc. Moreover, this installation will carry my self-expression. I like music, chatting, meeting new friends, and bringing joy to others, which are what the installation will do when interacting with players. 
+The Music Printer is an installation that invites people to collaborate with machines. This human-machine cooperation is important to me as many of my projects cannot come true without machines, algorithms, AI, etc. Moreover, this installation also carries my self-expression. I like music, chatting, meeting new friends, and bringing joy to others, which are what the installation will do when interacting with players. It is like a medium for me to meet people and play music with them. 
+
+The installation is also related to our society nowadays. Heated discussions happened around the authenticity of AI-generated artwork, while more and more industries are leveraging the power of AI. Although my project is not likely to integrate AI tools due to limited time, I hope the machine-human collaboration mode for music creation is just as thought-provoking. By introducing the thermal printer into the installation, I also try to humanize machines: they are not just cold tools, but can also be our cooperators in everyday tasks or a playmate when killing time. Machines are indeed becoming part of our modern lives. 
 
 The installation can also be related to our previous readings. Douglas Rushkoff may see the installation as a modeled reality because I will use MIDI music to produce chords. Chris Crawford might think of the installation as interactive but not highly interactive. I think the Music Printer will not be "thinking" -- it will just "listen" and "speak" in the language it can understand. On the other hand, players as humans will "listen to" and think about the information provided, and "speak" to the machine in terms of actions. 
 
@@ -98,9 +100,9 @@ So far I don't see the need for external data, but I will use the external libra
 
 I was planning to use an ultrasonic sensor for player detection around the installation, but it only works with 5V power (the highest power available from Arduino Nano ESP32 is 3.3V). Therefore, currently I don't plan to use sensors in my project. 
 
-### Project planning
+### Project planning & progress
 
-Since I went to CMU for the "art && code" workshop at CMU last weekend, I didn't get much time to work on the coding of the Music Printer. However, I have bought a thermal printer, a suitable AC-to-DC converter for powering the printer, and thermal paper for printing. I also have achieved serial communication between p5.js and Arduino. Below is my plan for the upcoming week: 
+Since I went to CMU for the "art && code" workshop at CMU last weekend, I didn't get much time to work on the coding of the Music Printer. However, I have bought a thermal printer, a suitable AC-to-DC converter for powering the printer, and thermal paper for printing. I also have achieved serial communication between p5.js and Arduino by working on [HW12](https://github.com/6063-fuguoxue/HW12). Below is my plan for the upcoming week: 
 
 | Deadline      | Task |
 | ----------- | ----------- |
