@@ -23,10 +23,12 @@ function receiveSerial() {
   // get data from Serial string
   let data = JSON.parse(line).data;
   let a0 = data.A0;
+  let d2 = data.D2;
+  let d3 = data.D3;
 
   // use data to update project variables
   // bgColor = map(a0.value, 0, 4095, 0, 255); //a0.min and a0.max somehow don't work here
-  choiceSlider.value(floor(map(a0.value, 0, 4095, 0, 11)));
+  choiceSlider.value(floor(map(a0.value, 0, 4095, 0, 4)));
 
   // serial update
   readyToReceive = true;
@@ -75,7 +77,7 @@ function setup() {
   connectButton.position(width / 2, height / 2);
   connectButton.mousePressed(connectToSerial);
 
-  choiceSlider = createSlider(0, 10, 5, 1);
+  choiceSlider = createSlider(0, 4, 0, 1);
   choiceSlider.position(width / 2, height / 4*3);
 }
 
