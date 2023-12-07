@@ -71,7 +71,7 @@ The installation can also be related to our previous readings. Douglas Rushkoff 
 
 ### System Diagram
 
-![](./imgs/system-diagram.png)
+![](./imgs/system-diagram-revised.png)
 
 ### FSM Diagram
 
