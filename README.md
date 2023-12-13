@@ -141,3 +141,42 @@ If I cannot work out the thermal printer, I will focus on refining the music log
 
 * https://www.npmjs.com/package/hydra-synth
 
+## Milestone 3: Project Development
+
+This week, I developed my Music Printer installation as a music game and tested my thermal printer. I made some changes to the project diagrams and finished the demo of my project. 
+
+To briefly introduce my project demo, it is inspired by [Bach: Prelude 1 in C Major BWV 846](https://www.youtube.com/watch?v=PXMVkQ70I88). Upon the game's start, the player can use the potentiometer and button 1 to tweak the five music notes on the screen, which will later be played in the loop of 1-2-3-4-5-3-4-5. After setting the initial set of notes, the player can press button 2 to start playing the loop music. The player can also change the notes while the music is playing. After a preset length of time, the game ends and invites the player to restart the game. 
+
+The thermal printer logic will be developed in the upcoming week. 
+
+### Updated Diagrams
+
+![](./imgs/milestone3-circuit-diagram.jpg)
+
+![](./imgs/milestone3-fsm.png)
+
+![](./imgs/milestone3-system-diagram.png)
+
+### Videos
+
+#### Project Demo
+
+<div align="center" style="width:50%;">
+      <a href="https://www.youtube.com/watch?v=-YToAsdygYo">
+         <img src="https://img.youtube.com/vi/-YToAsdygYo/0.jpg" style="width:50%;">
+      </a>
+</div>
+
+#### Thermal Printer Testing
+
+<div align="center" style="width:50%;">
+      <a href="https://www.youtube.com/shorts/6HnAN3gaVA4">
+         <img src="https://img.youtube.com/vi/6HnAN3gaVA4/0.jpg" style="width:50%;">
+      </a>
+</div>
+
+### Next Steps
+
+This week in class, I want to have classmates playtest the Music Printer. I also want to gather some feedback for future improvement. 
+
+For next week, I will refine the visuals based on the feedback and get the thermal printer working along with p5.js. 
