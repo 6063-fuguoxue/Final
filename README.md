@@ -141,3 +141,38 @@ If I cannot work out the thermal printer, I will focus on refining the music log
 
 * https://www.npmjs.com/package/hydra-synth
 
+## Milestone 3: Project Development
+
+This week, I developed Music Printer and tested my thermal printer. I made some changes to the project diagrams and finished the demo of my project. 
+
+### Updated Diagrams
+
+![](./imgs/milestone3-circuit-diagram.jpg)
+
+![](./imgs/milestone3-fsm.png)
+
+![](./imgs/milestone3-system-diagram.png)
+
+### Videos
+
+#### Project Demo
+
+<div align="center" style="width:50%;">
+      <a href="https://www.youtube.com/watch?v=-YToAsdygYo">
+         <img src="https://img.youtube.com/vi/-YToAsdygYo/0.jpg" style="width:50%;">
+      </a>
+</div>
+
+#### Thermal Printer Testing
+
+<div align="center" style="width:50%;">
+      <a href="https://www.youtube.com/shorts/6HnAN3gaVA4">
+         <img src="https://img.youtube.com/vi/6HnAN3gaVA4/0.jpg" style="width:50%;">
+      </a>
+</div>
+
+### Next Steps
+
+This week in class, I want to have classmates playtest the Music Printer. I also want to gather some feedback for future improvement. 
+
+For next week, I will refine the visuals based on the feedback and get the thermal printer working along with p5.js. 
