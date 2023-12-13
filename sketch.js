@@ -23,15 +23,22 @@ let mEnv;
 let FREQS = {
   A3: 220,
   B3: 247,
-  C3: 261,
-  D3: 294,
-  E3: 329,
-  F3: 349,
-  G3: 392, 
+  C4: 261,
+  D4: 294,
+  E4: 329,
+  F4: 349,
+  G4: 392, 
+  A4: 440, 
+  B4: 494,
+  C5: 523,
+  D5: 587,
+  E5: 659, 
+  F5: 698,
+  G5: 784,
 };
 
 // let notationList = ['A3', 'B3', 'C3', 'D3', 'E3', 'F3', 'G3'];
-let notationsPrinted = ['A3', 'C3', 'E3', 'F3', 'G3', 'E3', 'F3', 'G3']; 
+let notationsPrinted = ['C4', 'E3', 'G3', 'C5', 'E5', 'G3', 'C5', 'E5']; 
 let notationsPrintedIndex = 0;
 let currentNoteIndex = 0;
 let startAtMillis;
@@ -84,7 +91,7 @@ function receiveSerial() {
   // choiceSlider.value(floor(map(a0.value, 0, 4095, 0, 4)));
   notationsPrintedIndex = d3.count % 5; // Loop select the five spot of notations
   // console.log(floor(map(a0.value, 0, 4096, 0, 7)));
-  notationsPrinted[notationsPrintedIndex] = Object.keys(FREQS)[floor(map(a0.value, 0, 4096, 0, 7))]; // Change the notation of the current line
+  notationsPrinted[notationsPrintedIndex] = Object.keys(FREQS)[floor(map(a0.value, 0, 4096, 0, Object.keys(FREQS).length))]; // Change the notation of the current line
   notationsPrinted[5] = notationsPrinted[2];
   notationsPrinted[6] = notationsPrinted[3];
   notationsPrinted[7] = notationsPrinted[4];
