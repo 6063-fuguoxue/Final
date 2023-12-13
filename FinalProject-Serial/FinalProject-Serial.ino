@@ -48,6 +48,9 @@ void loop() {
   if (d3Val && d3Val != prevD3Val) {
     d3ClickCount++;
   }
+  // if (d2Val) {
+  //   d3ClickCount = 0;
+  // }
 
   prevD3Val = d3Val;
 
@@ -57,11 +60,16 @@ void loop() {
     if (byteIn == 0xAB) {
       Serial.flush();
       sendData();
-    } else if (byteIn == 1) {
+    } 
+    if (byteIn == 1) {
       digitalWrite(ledPin, HIGH);
-    } else if (byteIn == 0){
+    } 
+    if (byteIn == 0){
       digitalWrite(ledPin, LOW);
-    }
+    } 
+    if (byteIn == 2){
+      d3ClickCount = 0;
+    } 
   }
 
   delay(2);
