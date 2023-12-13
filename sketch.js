@@ -414,10 +414,7 @@ function endingState() {
 
 function draw() {
   background(0,0,0,20);
-  fill(255);
-  rect(mouseX, mouseY, 100, 100);
-  // console.log(type(FREQS));
-
+  
   // update serial: request new data
   sendAndReceive();
 
