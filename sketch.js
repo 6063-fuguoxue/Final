@@ -32,14 +32,14 @@ let timer = 0;
 let flag = 0;
 
 let stateIndex = 0; // System initialized at state 0
-let prevStateIndex = 5;
+let prevStateIndex = 4;
 
 // face api example from ml5  https://learn.ml5js.org/#/reference/face-api
 // credit to Joey Lee.  https://jk-lee.com/
 // credit to Bomani Oseni McClendon. https://github.com/ml5js/ml5-library/tree/main/examples/p5js/FaceApi
 let faceapi;
 let video;
-let detections;
+let detections = [];
 let prevDetectionsLeng;
 
 
@@ -114,7 +114,7 @@ function gameStart() {
 
 function gameRestart() {
   stateIndex = 0;
-  prevStateIndex = 5;
+  prevStateIndex = 4;
   gameRestartButton.hide();
   noteCircles = [];
   flag = 0;
@@ -212,24 +212,34 @@ function drawPart(feature, closed) {
     endShape();
   }
 }
-
+let numToSend = 0;
 function sendAndReceive() {
   // update serial: request new data
   if (mSerial.opened() && readyToReceive) {
     readyToReceive = false;
     mSerial.clear();
     
-    
     if (detections.length && prevDetectionsLeng == 0) {     
-      mSerial.write(1);
-      // mSerial.write(0xab);
+      mSerial.write(30);
     } 
     if (detections.length == 0 && prevDetectionsLeng) {
-      mSerial.write(0);
-      // mSerial.write(0xab);
+      mSerial.write(31);
     } 
-    if ((stateIndex == 0 || stateIndex == 1) && prevStateIndex == 5) {
-      mSerial.write(2);
+    if ((stateIndex == 0 || stateIndex == 1) && prevStateIndex == 4) {
+      mSerial.write(32);
+    }
+    // if (stateIndex == 3) {
+    //   // mSerial.write(chordToArduino.length); 
+    //   for (let i=0; i<chordToArduino.length; i++) {
+    //     mSerial.write(chordToArduino[i]); 
+    //   }
+    //   mSerial.write(13);
+    // }
+    if (stateIndex == 2) {
+      mSerial.write(33); 
+    }
+    if (stateIndex == 4) {
+      mSerial.write(34); 
     }
     
     mSerial.write(0xab);
@@ -246,32 +256,36 @@ function sendAndReceive() {
 
 // -------- Game Start! --------
 // State 2
+let r,g,b;
 function musicComposition() {
-  noFill();
-  textSize(50);
+  r = map(availableNotesList.indexOf(selectedNotes[0]), 0, 7, 0, 255);
+  g = map(availableNotesList.indexOf(selectedNotes[1]), 0, 7, 0, 255);
+  b = map(availableNotesList.indexOf(selectedNotes[2]), 0, 7, 0, 255);
+  background(r, g, b, 50);
+  noStroke();
+  textSize(100);
+  textAlign(CENTER, CENTER);
 
-  stroke(noteIdxToChange == 0 ? selectedFill : unselectedFill);
+  fill(noteIdxToChange == 0 ? selectedFill : unselectedFill);
   // strokeWeight(noteIdxToChange == 2 ? bigStroke : smallStroke);
-  text(selectedNotes[0], width/2 - 50, height/2);
-  line(width/2, 0, width/2, height);
+  text(selectedNotes[0], width/5*1, height/2);
 
-  stroke(noteIdxToChange == 1 ? selectedFill : unselectedFill);
+  fill(noteIdxToChange == 1 ? selectedFill : unselectedFill);
   // strokeWeight(noteIdxToChange == 3 ? bigStroke : smallStroke);
-  text(selectedNotes[1], width/6 + width/2 - 50, height/2);
-  line(width/2 + width/6, 0, width/2 + width/6, height);
+  text(selectedNotes[1], width/2, height/2);
 
-  stroke(noteIdxToChange == 2 ? selectedFill : unselectedFill);
+  fill  (noteIdxToChange == 2 ? selectedFill : unselectedFill);
   // strokeWeight(noteIdxToChange == 4 ? bigStroke : smallStroke);
-  text(selectedNotes[2], width/6*2 + width/2 - 50, height/2);  
-  line(width/2 + width/6*2, 0, width/2 + width/6*2, height);
+  text(selectedNotes[2], width/5*4, height/2); 
 }
 
 // State 3
+let chordToArduino = [];
+// let sendChord = false;
 class Chord {
   constructor(_note) {
     this.note = _note;
     this.chordNotes = [];
-    
   }
   play() {
     
@@ -280,11 +294,11 @@ class Chord {
     let noteNum = floor(random(2, 6)); // define number of notes in this chord, ranging from 2 to 5
     switch (noteNum) {
       case 2: 
-        append(this.chordNotes, piano[piano.indexOf(this.note) - 4]); // Major 3rd
+        append(this.chordNotes, piano[piano.indexOf(this.note) - 3]); // Major 3rd
         break;
       case 3: 
-        append(this.chordNotes, piano[piano.indexOf(this.note) - 4]); 
-        append(this.chordNotes, piano[piano.indexOf(this.note) - 9]); 
+        append(this.chordNotes, piano[piano.indexOf(this.note) - 3]); 
+        append(this.chordNotes, piano[piano.indexOf(this.note) - 7]); 
         break;
       case 4: 
         append(this.chordNotes, piano[piano.indexOf(this.note) - 4]); 
@@ -307,7 +321,8 @@ class Chord {
 
     // velocity (volume, from 0 to 1)
     let vel = 0.1;
-    
+
+    chordToArduino = []; // Clean up the array to send to Arduino
 
     // notes can overlap with each other
     let noteCircleColor = color(random(255), random(255), random(255));
@@ -316,7 +331,9 @@ class Chord {
       synth.play(this.chordNotes[i], vel, 0, dur);
       let T = millis();
       noteCircles.push(new noteCircle(piano.indexOf(this.chordNotes[i]), T, noteCircleColor));
-    }
+      append(chordToArduino, piano.indexOf(this.chordNotes[i])); 
+    }    
+    print(chordToArduino);
   }
 }
 
@@ -329,8 +346,9 @@ function isOnCanvas(item) {
   }
 }
 
-// let chord;
+let timeStamp;
 function musicPlaying() {
+  background(r, g, b, 50);
   // Play the Music
   timer = millis() - startAtMillis; // Timer since entering State 3
   currentNoteIndex = floor(timer/durationPerNote) % 3;
@@ -338,6 +356,11 @@ function musicPlaying() {
   if ((timer - flag - durationPerNote >= 0) || (timer == 0)) {
     new Chord(selectedNotes[currentNoteIndex]).play(); // Step 1: Generate a chord for this note
     flag = timer;
+    // Send chord information to Arduino
+    if (mSerial.opened() && readyToReceive) {
+      mSerial.write(chordToArduino.length); 
+      mSerial.write(0xab);
+    }    
   }
 
   // Music Visualization
@@ -356,20 +379,24 @@ function musicPlaying() {
   if (timer/1000 >= durationOfPlay) {
     stateIndex = 4;
     prevStateIndex = 3;
+    timeStamp = millis();
   }
 }
 
 // State 4
 function endingState() {
   // Testing
+  stateIndex = 4;
+  prevStateIndex = 3;
   textAlign(CENTER, CENTER);
-  textSize(30);
+  textSize(100);
   stroke(255);
-  strokeWeight(3);
+
   text("Thank you! ", windowWidth/2, windowHeight/2);
-  gameRestartButton.show();
-  noteCircles = [];
-  
+  if ((millis() - timeStamp) > 3000) {
+    gameRestart();
+  }  
+  noteCircles = [];  
 }
 
 function setup() {

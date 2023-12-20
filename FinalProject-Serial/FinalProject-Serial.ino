@@ -1,4 +1,12 @@
 #include <ArduinoJson.h>
+#include "Adafruit_Thermal.h"
+#include "SoftwareSerial.h"
+#include <EEPROM.h>
+#define TX_PIN 0 // Arduino transmit  YELLOW WIRE  labeled RX on printer
+#define RX_PIN 1 // Arduino receive   GREEN WIRE   labeled TX on printer
+
+SoftwareSerial mySerial(RX_PIN, TX_PIN); // Declare SoftwareSerial obj first
+Adafruit_Thermal printer(&mySerial);     // Pass addr to printer constructor
 
 // project variables
 // a0 Pin: potentiometer value detection
@@ -8,10 +16,17 @@ int d2Val = 0;
 // d3 pin: connected to button2, switch to new line upon pressing
 int d3ClickCount = 0;
 int d3Val = 0;
+int chordArray[5] = {100, 100, 100, 100, 100}; // array with 5 placeholders to store chord note indexes
+int chordArrayIndex = 0;
 
 const int ledPin = 4;
 
 int prevD3Val = 0;
+
+int prevByteIn = 10;
+int byteIn = 11;
+
+// String Line = "";
 
 void sendData() {
   StaticJsonDocument<128> resJson;
@@ -33,10 +48,34 @@ void sendData() {
 
 void setup() {
   // Serial setup
+  mySerial.begin(9600);  // Initialize SoftwareSerial
+  printer.begin();        // Init printer (same regardless of serial type)
   Serial.begin(9600);
+  Serial.setTimeout(50);
   while (!Serial) {}
   pinMode(ledPin, OUTPUT);
 }
+
+// String createLine() {
+//   String Line = "";
+//   // for (int j = 0; j<sizeof(chordArray); j++) {
+//   //   Line += String(chordArray[j]);
+//   // }  
+//   for (int i = 0; i<24; i++) {
+//     bool note = false;
+//     for (int j = 0; j<sizeof(chordArray); j++) {
+//       if (i == chordArray[j]) {
+//         note = true;
+//       }
+//     }
+//     if (note) {
+//       Line += "A";
+//     } else {
+//       Line += " ";
+//     }
+//   }
+//   return Line;
+// }
 
 void loop() {
   // read pins
@@ -56,20 +95,65 @@ void loop() {
 
   // check if there was a request for data, and if so, send new data
   if (Serial.available() > 0) {
-    int byteIn = Serial.read();
+    prevByteIn = byteIn;
+    byteIn = Serial.read();
     if (byteIn == 0xAB) {
       Serial.flush();
       sendData();
-    } 
-    if (byteIn == 1) {
+    } else if (byteIn == 30) {
       digitalWrite(ledPin, HIGH);
-    } 
-    if (byteIn == 0){
+      printer.justify('C');
+      printer.println("Let's play! ");
+      printer.println();
+      printer.println();
+      printer.println();
+      printer.sleep();      // Tell printer to sleep
+    } else if (byteIn == 31) {
       digitalWrite(ledPin, LOW);
-    } 
-    if (byteIn == 2){
+      printer.wake();       // MUST wake() before printing again, even if reset
+      printer.setDefault(); // Restore printer to defaults
+    } else if (byteIn == 32){ 
       d3ClickCount = 0;
-    } 
+    } else if (byteIn == 33) { // State 2: music composition
+      printer.wake();       // MUST wake() before printing again, even if reset
+      printer.setDefault(); // Restore printer to defaults
+    } else if (byteIn == 34) {
+      printer.println();
+      printer.println();
+      printer.println("It was so happy to play with you!");
+      printer.println();
+      printer.println("You are a very talented musician. . .");
+      printer.println();
+      printer.println("Feel free to take me away");
+      printer.println();
+      printer.println();
+      printer.println();
+      printer.sleep();      // Tell printer to sleep
+    } else {
+      printer.justify('L');
+      // if (byteIn == 34) {
+      //   printer.println(createLine());
+      // } else {
+      //   if (prevByteIn == 0xab) {
+      //     for (int j = 0; j<sizeof(chordArray); j++) {
+      //       chordArray[j] = 100;
+      //     }
+      //   } else {
+      //     chordArray[chordArrayIndex] = byteIn;
+      //     chordArrayIndex += 1;
+      //   }
+      // }
+      printer.inverseOn();
+      String Line = "";
+      for (int i=0; i<byteIn*5; i++) {
+        Line += " ";
+      }
+
+      printer.justify('C');
+      printer.println(Line);
+      printer.inverseOff();
+      printer.println();
+    }
   }
 
   delay(2);
