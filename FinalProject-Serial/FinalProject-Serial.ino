@@ -100,7 +100,7 @@ void loop() {
     if (byteIn == 0xAB) {
       Serial.flush();
       sendData();
-    } else if (byteIn == 30) {
+    } else if (byteIn == 31) {
       digitalWrite(ledPin, HIGH);
       printer.justify('C');
       printer.println("Let's play! ");
@@ -108,7 +108,7 @@ void loop() {
       printer.println();
       printer.println();
       printer.sleep();      // Tell printer to sleep
-    } else if (byteIn == 31) {
+    } else if (byteIn == 30) {
       digitalWrite(ledPin, LOW);
       printer.wake();       // MUST wake() before printing again, even if reset
       printer.setDefault(); // Restore printer to defaults

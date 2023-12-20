@@ -219,12 +219,12 @@ function sendAndReceive() {
     readyToReceive = false;
     mSerial.clear();
     
-    if (detections.length && prevDetectionsLeng == 0) {     
+    if (detections.length == 0 && prevDetectionsLeng) {
       mSerial.write(30);
     } 
-    if (detections.length == 0 && prevDetectionsLeng) {
+    if (detections.length && prevDetectionsLeng == 0) {     
       mSerial.write(31);
-    } 
+    }     
     if ((stateIndex == 0 || stateIndex == 1) && prevStateIndex == 4) {
       mSerial.write(32);
     }
