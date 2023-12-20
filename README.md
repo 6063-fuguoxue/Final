@@ -232,6 +232,7 @@ The installation is also related to our society nowadays. Heated discussions hap
 The installation can also be related to our previous readings. Douglas Rushkoff may see the installation as a modeled reality because I will use MIDI music to produce chords. Chris Crawford might think of the installation as interactive but not highly interactive. I think the Music Printer will not be "thinking" -- it will just "listen" and "speak" in the language it can understand. On the other hand, players as humans will "listen to" and think about the information provided, and "speak" to the machine in terms of actions. 
 
 ### Short discussion of feedback from user testing
+
 Upon Milestone 3, I showed my prototype to people for feedback. Below are some of them: 
 * People may not understand the notation system implemented in my project.
 * The visuals can be further enhanced.
@@ -244,3 +245,15 @@ Therefore, I made the following changes to the p5.js side:
 * I added thermal printing to create more fun in the installation.
 
 Due to limited time, I have more features that I wanted but have yet to implement. For example, now I put all the selected notes as the highest notes in the generated chords so that players can hear more obviously of their selected notes. However, I want to expand the chord list and generate more random chords. Moreover, the current serial communications between Arduino and p5.js tend to lose information and be laggy. I want to find a way to fix that in future iterations. Lastly, I want to make a box to contain my thermal printer, breadboard, Arduino board, and other electronic elements so that they look less messy. 
+
+### Music Printer - Image and Video Demonstration
+
+<div align="center" style="width:50%;">
+      <a href="https://www.youtube.com/watch?v=HZpMY5Z01K0">
+         <img src="https://img.youtube.com/vi/HZpMY5Z01K0/0.jpg" style="width:50%;">
+      </a>
+</div>
+
+![](./imgs/receipt.jpg)
+
+
