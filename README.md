@@ -180,3 +180,67 @@ The thermal printer logic will be developed in the upcoming week.
 This week in class, I want to have classmates playtest the Music Printer. I also want to gather some feedback for future improvement. 
 
 For next week, I will refine the visuals based on the feedback and get the thermal printer working along with p5.js. 
+
+## Milestone 4: Final Code, Documentation and Video
+### System diagram
+![](./imgs/system-diagram-1220.png)
+
+### FSM diagram
+![](./imgs/milestone3-fsm.png)
+
+### Circuit diagram
+![](./imgs/milestone3-circuit-diagram.jpg)
+
+### Description of any external data or library
+The final version of this project utilized ml5.js and p5.sound libraries. ml5.js is for face recognition at the beginning of the game, and p5.sound is for the chords playing. 
+
+### Description of sensor, output component, and mechanism
+The physical components involved are two buttons, one potentiometer, and one thermal printer. 
+Potentiometer: change note at the current selected slot;
+Button 1: switch to the next spot;
+Button 2: start playing the chords;
+Thermal Printer: print visualization of the chords.
+
+### Reference images, texts, and projects
+**Face API**: 
+* https://editor.p5js.org/rios/sketches/QH1ch5GFr
+
+**Thermal printer tutorial**: 
+* https://blog.arduino.cc/2023/05/20/control-a-thermal-printer-with-your-arduino/
+
+**Artwork using thermal printer**: 
+* https://vimeo.com/33698229
+* https://hackaday.com/2020/10/03/receipt-printers-end-it-all-in-moving-art-piece/
+
+**My Homework 9**: 
+* https://github.com/6063-fuguoxue/HW09
+
+**p5.PolySynth**: 
+* https://p5js.org/reference/#/p5.PolySynth
+
+**ADSR Envelope - p5.js Sound Tutorial**: 
+* https://www.youtube.com/watch?v=wUSva_BnedA&t
+
+**ADSR Envelope - p5.js Sound Tutorial**: 
+* https://www.youtube.com/watch?v=wUSva_BnedA&t
+
+### Short discussion of why your project is relevant:
+The Music Printer is an installation that invites people to collaborate with machines. This human-machine cooperation is important to me as many of my projects cannot come true without machines, algorithms, AI, etc. Moreover, this installation also carries my self-expression. I like music, chatting, meeting new friends, and bringing joy to others, which are what the installation will do when interacting with players. It is like a medium for me to meet people and play music with them. 
+
+The installation is also related to our society nowadays. Heated discussions happened around the authenticity of AI-generated artwork, while more and more industries are leveraging the power of AI. Although my project is not likely to integrate AI tools due to limited time, I hope the machine-human collaboration mode for music creation is just as thought-provoking. By introducing the thermal printer into the installation, I also try to humanize machines: they are not just cold tools, but can also be our cooperators in everyday tasks or a playmate when killing time. Machines are indeed becoming part of our modern lives. 
+
+The installation can also be related to our previous readings. Douglas Rushkoff may see the installation as a modeled reality because I will use MIDI music to produce chords. Chris Crawford might think of the installation as interactive but not highly interactive. I think the Music Printer will not be "thinking" -- it will just "listen" and "speak" in the language it can understand. On the other hand, players as humans will "listen to" and think about the information provided, and "speak" to the machine in terms of actions. 
+
+### Short discussion of feedback from user testing
+Upon Milestone 3, I showed my prototype to people for feedback. Below are some of them: 
+* People may not understand the notation system implemented in my project.
+* The visuals can be further enhanced.
+* Chords may be a good direction to explore. 
+
+Therefore, I made the following changes to the p5.js side: 
+* I added changes in the background color at the music composition state. It functions as another reference: for players who don't understand the music notations, they can simply tweak the background to the color they like. 
+* I reduced the number of notes available for selection to 3 because 1) I don't want to bother players with too many details of music notations, and 2) I only need one note input to generate a chord.
+* I like the music visualization in my homework 9, so I moved it to this final project and modified it.
+* I added thermal printing to create more fun in the installation.
+
+Due to limited time, I have more features that I wanted but have yet to implement. For example, now I put all the selected notes as the highest notes in the generated chords so that players can hear more obviously of their selected notes. However, I want to expand the chord list and generate more random chords. Moreover, the current serial communications between Arduino and p5.js tend to lose information and be laggy. I want to find a way to fix that in future iterations. Lastly, I want to make a box to contain my thermal printer, breadboard, Arduino board, and other electronic elements so that they look less messy. 
