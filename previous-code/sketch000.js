@@ -9,27 +9,40 @@ let readyToReceive;
 let gameStartButton; 
 let gameRestartButton;
 let durationOfPlay = 32; // number of seconds to play the music; better be multiple of 4
-let durationPerNote = 1000; 
+let durationPerNote = 800; 
 let bigStroke = 30;
 let smallStroke = 9;
 let selectedFill = 255;
 let unselectedFill = 80;
 
 // Music
-let synth;
-let piano = ['A4', 'A#4', 'B4', 'C4', 'C#4', 'D4', 'D#4', 'E4', 'F4', 'F#4', 'G4', 'G#4', 'A5', 'A#5', 'B5', 'C5', 'C#5', 'D5', 'D#5', 'E5', 'F5', 'F#5', 'G5', 'G#5']; // For chord-related calculation
-let availableNotesList = ['A5', 'B5', 'C5', 'D5', 'E5', 'F5', 'G5']; // Available notes for player to choose from
-let selectedNotes = ['A5', 'C5', 'E5']; // 3 notes selected by player
+let mOsc;
+let mLfo;
+let mEnv;
 
-// Music Visualization
-let noteCircles = [];
+let FREQS = {
+  A3: 220,
+  B3: 247,
+  C4: 261,
+  D4: 294,
+  E4: 329,
+  F4: 349,
+  G4: 392, 
+  A4: 440, 
+  B4: 494,
+  C5: 523,
+  D5: 587,
+  E5: 659, 
+  F5: 698,
+  G5: 784,
+};
 
-
-
-let noteIdxToChange = 0; // Current index of note to change
+// let notationList = ['A3', 'B3', 'C3', 'D3', 'E3', 'F3', 'G3'];
+let notationsPrinted = ['C4', 'E3', 'G3', 'C5', 'E5', 'G3', 'C5', 'E5']; 
+let notationsPrintedIndex = 0;
+let currentNoteIndex = 0;
 let startAtMillis;
 let timer = 0;
-let flag = 0;
 
 let stateIndex = 0; // System initialized at state 0
 let prevStateIndex = 5;
@@ -76,16 +89,18 @@ function receiveSerial() {
   // Use potentiometer to update the notes
   // bgColor = map(a0.value, 0, 4095, 0, 255); //a0.min and a0.max somehow don't work here
   // choiceSlider.value(floor(map(a0.value, 0, 4095, 0, 4)));
-  noteIdxToChange = d3.count % 3; // Loop select the 3 spots of selectedNotes
+  notationsPrintedIndex = d3.count % 5; // Loop select the five spot of notations
   // console.log(floor(map(a0.value, 0, 4096, 0, 7)));
-  selectedNotes[noteIdxToChange] = availableNotesList[floor(map(a0.value, 0, 4096, 0, availableNotesList.length))]; // Change the notation of the current line
+  notationsPrinted[notationsPrintedIndex] = Object.keys(FREQS)[floor(map(a0.value, 0, 4096, 0, Object.keys(FREQS).length))]; // Change the notation of the current line
+  notationsPrinted[5] = notationsPrinted[2];
+  notationsPrinted[6] = notationsPrinted[3];
+  notationsPrinted[7] = notationsPrinted[4];
 
   if (d2.isPressed && stateIndex == 2) {
     stateIndex = 3;
     prevStateIndex = 2;
-    // mOsc.start();
+    mOsc.start();
     startAtMillis = millis();
-    userStartAudio();
   }
   
   console.log(startAtMillis);
@@ -108,19 +123,72 @@ function gameStart() {
   stateIndex = 2;
   prevStateIndex = 1;
   gameStartButton.hide();
-  noteCircles = [];
-  flag = 0;
 }
 
 function gameRestart() {
   stateIndex = 0;
   prevStateIndex = 5;
   gameRestartButton.hide();
-  noteCircles = [];
-  flag = 0;
 }
 
+function setup() {
+  createCanvas(windowWidth, windowHeight);
 
+  // Load up your video
+  video = createCapture(VIDEO);
+  video.size(width, height);
+  video.hide(); // Hide the video element, and just show the canvas
+  faceapi = ml5.faceApi(video, detectionOptions, modelReady);
+  textAlign(RIGHT);
+
+  // Set up serial
+  readyToReceive = false;
+  mSerial = createSerial();
+
+  // Button: connect to serial
+  connectButton = createButton("Connect To Serial");
+  connectButton.position(width / 2, height / 2);
+  connectButton.mousePressed(connectToSerial);
+
+  // Button: game start
+  gameStartButton = createButton("OK!");
+  gameStartButton.position(width / 2, height / 2);
+  gameStartButton.mousePressed(gameStart);
+  gameStartButton.hide();  
+
+  // Button: game restart
+  gameRestartButton = createButton("Restart!");
+  gameRestartButton.position(width / 2 + 100, height / 2 + 100);
+  gameRestartButton.mousePressed(gameRestart);
+  gameRestartButton.hide(); 
+
+  // // Slider: For serial communication testing
+  // choiceSlider = createSlider(0, 4, 0, 1);
+  // choiceSlider.position(width / 2, height / 4*3);
+  // choiceSlider.hide();
+
+  // Set up OSC
+  mOsc = new p5.Oscillator("sine");
+  mOsc.disconnect();
+  mOsc.freq(0);
+  mOsc.amp(0.0);
+
+  mLfo = new p5.Oscillator("sine");
+  mLfo.disconnect();
+  mLfo.freq(0);
+  mLfo.amp(60);
+  mLfo.start();
+
+  mEnv = new p5.Envelope();
+  mEnv.setADSR(0.05, 0.1, 0.8, 0.5);
+
+  mOsc.connect(p5.SoundOut);
+  mOsc.freq(mLfo);
+  mOsc.amp(mEnv);
+  // mOsc.start();
+
+  // noLoop();
+}
 
 function modelReady() {
   console.log("ready!");
@@ -245,112 +313,95 @@ function sendAndReceive() {
 }
 
 // -------- Game Start! --------
-// State 2
+
 function musicComposition() {
+  // stateIndex = 2;
+  // stroke(255);
   noFill();
+  // ellipse(0, height/2, height/2, height/2);
+  // ellipse(0, height/2, height, height);
+  // line(width/2, 0, width/2, height);
+  // line(width/2 + width/6, 0, width/2 + width/6, height);
+  // line(width/2 + width/6*2, 0, width/2 + width/6*2, height);
   textSize(50);
 
-  stroke(noteIdxToChange == 0 ? selectedFill : unselectedFill);
-  // strokeWeight(noteIdxToChange == 2 ? bigStroke : smallStroke);
-  text(selectedNotes[0], width/2 - 50, height/2);
+  stroke(notationsPrintedIndex == 0 ? selectedFill : unselectedFill);
+  // strokeWeight(notationsPrintedIndex == 0 ? bigStroke : smallStroke);
+  text(notationsPrinted[0], height/4 - 50, height/2);
+  ellipse(0, height/2, height/2, height/2);
+
+  stroke(notationsPrintedIndex == 1 ? selectedFill : unselectedFill);
+  // strokeWeight(notationsPrintedIndex == 1 ? bigStroke : smallStroke);
+  text(notationsPrinted[1], height/2 - 50, height/2);
+  ellipse(0, height/2, height, height);
+
+  stroke(notationsPrintedIndex == 2 ? selectedFill : unselectedFill);
+  // strokeWeight(notationsPrintedIndex == 2 ? bigStroke : smallStroke);
+  text(notationsPrinted[2], width/2 - 50, height/2);
   line(width/2, 0, width/2, height);
 
-  stroke(noteIdxToChange == 1 ? selectedFill : unselectedFill);
-  // strokeWeight(noteIdxToChange == 3 ? bigStroke : smallStroke);
-  text(selectedNotes[1], width/6 + width/2 - 50, height/2);
+  stroke(notationsPrintedIndex == 3 ? selectedFill : unselectedFill);
+  // strokeWeight(notationsPrintedIndex == 3 ? bigStroke : smallStroke);
+  text(notationsPrinted[3], width/6 + width/2 - 50, height/2);
   line(width/2 + width/6, 0, width/2 + width/6, height);
 
-  stroke(noteIdxToChange == 2 ? selectedFill : unselectedFill);
-  // strokeWeight(noteIdxToChange == 4 ? bigStroke : smallStroke);
-  text(selectedNotes[2], width/6*2 + width/2 - 50, height/2);  
+  stroke(notationsPrintedIndex == 4 ? selectedFill : unselectedFill);
+  // strokeWeight(notationsPrintedIndex == 4 ? bigStroke : smallStroke);
+  text(notationsPrinted[4], width/6*2 + width/2 - 50, height/2);  
   line(width/2 + width/6*2, 0, width/2 + width/6*2, height);
 }
 
-// State 3
-class Chord {
-  constructor(_note) {
-    this.note = _note;
-    this.chordNotes = [];
-    
-  }
-  play() {
-    
-    append(this.chordNotes, this.note); // First, append the defined note to the chord
-
-    let noteNum = floor(random(2, 6)); // define number of notes in this chord, ranging from 2 to 5
-    switch (noteNum) {
-      case 2: 
-        append(this.chordNotes, piano[piano.indexOf(this.note) - 4]); // Major 3rd
-        break;
-      case 3: 
-        append(this.chordNotes, piano[piano.indexOf(this.note) - 4]); 
-        append(this.chordNotes, piano[piano.indexOf(this.note) - 9]); 
-        break;
-      case 4: 
-        append(this.chordNotes, piano[piano.indexOf(this.note) - 4]); 
-        append(this.chordNotes, piano[piano.indexOf(this.note) - 9]); 
-        append(this.chordNotes, piano[piano.indexOf(this.note) - 12]); 
-        break;
-      case 5: 
-        append(this.chordNotes, piano[piano.indexOf(this.note) - 2]); 
-        append(this.chordNotes, piano[piano.indexOf(this.note) - 5]); 
-        append(this.chordNotes, piano[piano.indexOf(this.note) - 8]);  
-        append(this.chordNotes, piano[piano.indexOf(this.note) - 12]); 
-        break;
-    } 
-
-    // note duration (in seconds)
-    let dur = 1.5;
-
-    // time from now (in seconds)
-    let time = 0;
-
-    // velocity (volume, from 0 to 1)
-    let vel = 0.1;
-    
-
-    // notes can overlap with each other
-    let noteCircleColor = color(random(255), random(255), random(255));
-    for (let i=0; i < this.chordNotes.length; i++) {
-      console.log(this.chordNotes);
-      synth.play(this.chordNotes[i], vel, 0, dur);
-      let T = millis();
-      noteCircles.push(new noteCircle(piano.indexOf(this.chordNotes[i]), T, noteCircleColor));
-    }
-  }
-}
-
-// Check if the circles are still on canvas
-function isOnCanvas(item) {
-  if (item.x + item.d_mapped/2 < 0) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
-// let chord;
 function musicPlaying() {
-  // Play the Music
-  timer = millis() - startAtMillis; // Timer since entering State 3
-  currentNoteIndex = floor(timer/durationPerNote) % 3;
+  // Play the music  
+  timer = millis() - startAtMillis;
+  currentNoteIndex = floor(timer/durationPerNote) % 8;
+  let mF = FREQS[notationsPrinted[currentNoteIndex]];
+  mOsc.freq(mF);
+  mLfo.freq(mF / 3);
+  mEnv.triggerAttack();
+  setTimeout(() => mEnv.triggerRelease(), 100);
+    
 
-  if ((timer - flag - durationPerNote >= 0) || (timer == 0)) {
-    new Chord(selectedNotes[currentNoteIndex]).play(); // Step 1: Generate a chord for this note
-    flag = timer;
-  }
+  // Draw on the canvas
+  noFill();
 
-  // Music Visualization
-  // Filter out the circles that go out of the canvas
-  noteCircles = noteCircles.filter(isOnCanvas);
-  // Draw the circles that represents the MIDI notes
-  for (i = 0; i < noteCircles.length; i++) {
-    noteCircles[i].draw();
-  }
-  // Update the positions of the circles  
-  for (i = 0; i < noteCircles.length; i++) {
-    noteCircles[i].update();
-  }
+  strokeWeight(currentNoteIndex == 0 ? bigStroke : smallStroke);
+  stroke(38, 70, 83);
+  ellipse(0, height/2, height/2, height/2);
+
+  strokeWeight(currentNoteIndex == 1 ? bigStroke : smallStroke);
+  stroke(42, 157, 143);
+  ellipse(0, height/2, height, height);
+  
+  strokeWeight((currentNoteIndex == 2 || currentNoteIndex == 5) ? bigStroke : smallStroke);
+  stroke(233, 196, 106);
+  line(width/2, 0, width/2, height);
+
+  strokeWeight((currentNoteIndex == 3 || currentNoteIndex == 6) ? bigStroke : smallStroke);
+  stroke(244, 162, 97);
+  line(width/2 + width/6, 0, width/2 + width/6, height);
+
+  strokeWeight((currentNoteIndex == 4 || currentNoteIndex == 7) ? bigStroke : smallStroke);
+  stroke(231, 111, 81);
+  line(width/2 + width/6*2, 0, width/2 + width/6*2, height);
+
+  textSize(50);
+  noStroke();
+
+  fill(notationsPrintedIndex == 0 ? selectedFill : unselectedFill);
+  text(notationsPrinted[0], height/4 - 50, height/2);
+
+  fill(notationsPrintedIndex == 1 ? selectedFill : unselectedFill);
+  text(notationsPrinted[1], height/2 - 50, height/2);
+
+  fill(notationsPrintedIndex == 2 ? selectedFill : unselectedFill);
+  text(notationsPrinted[2], width/2 - 50, height/2);
+
+  fill(notationsPrintedIndex == 3 ? selectedFill : unselectedFill);
+  text(notationsPrinted[3], width/6 + width/2 - 50, height/2);
+
+  fill(notationsPrintedIndex == 4 ? selectedFill : unselectedFill);
+  text(notationsPrinted[4], width/6*2 + width/2 - 50, height/2);  
 
   // Switch to the ending state
   if (timer/1000 >= durationOfPlay) {
@@ -359,83 +410,19 @@ function musicPlaying() {
   }
 }
 
-// State 4
 function endingState() {
   // Testing
-  textAlign(CENTER, CENTER);
+  textAlign(CENTER);
   textSize(30);
   stroke(255);
   strokeWeight(3);
-  text("Thank you! ", windowWidth/2, windowHeight/2);
+  text("Thank you! ", windowWidth/2, windowHeight/2, windowWidth/2 + 100, windowHeight/2 + 100);
   gameRestartButton.show();
-  noteCircles = [];
   
 }
 
-function setup() {
-  createCanvas(windowWidth, windowHeight);
-
-  // Load up your video
-  video = createCapture(VIDEO);
-  video.size(width, height);
-  video.hide(); // Hide the video element, and just show the canvas
-  faceapi = ml5.faceApi(video, detectionOptions, modelReady);
-  textAlign(RIGHT);
-
-  // Set up serial
-  readyToReceive = false;
-  mSerial = createSerial();
-
-  // Button: connect to serial
-  connectButton = createButton("Connect To Serial");
-  connectButton.position(width / 2, height / 2);
-  connectButton.mousePressed(connectToSerial);
-
-  // Button: game start
-  gameStartButton = createButton("OK!");
-  gameStartButton.position(width / 2, height / 2);
-  gameStartButton.mousePressed(gameStart);
-  gameStartButton.hide();  
-
-  // Button: game restart
-  gameRestartButton = createButton("Restart!");
-  gameRestartButton.position(width / 2, height / 2);
-  gameRestartButton.mousePressed(gameRestart);
-  gameRestartButton.hide(); 
-
-  // Set up PolySynth
-  synth = new p5.PolySynth();
-  synth.setADSR(0.2, 0.2, 0.5, 0.2);
-
-  // noLoop();
-}
-
-class noteCircle {
-  constructor(_idx, _timeStamp, _color) {
-    this.d = 20;
-    this.timeStamp = _timeStamp; // The time when the note is played
-    this.x = width + this.d/2;
-    this.y = map(_idx, 0, piano.length, height - 50, 50);
-    this.color = _color;
-  }
-  draw() {
-    // //set colors
-    // patternColors([color(255), this.color]);
-    // //set pattern
-    // pattern(PTN.noiseGrad(0.5));
-    // ellipsePattern(this.x, this.y, this.d, this.d);
-    noStroke();
-    fill(this.color);
-    ellipse(this.x, this.y, this.d, this.d);
-  }
-  update() {
-    // Update the position of the noteCircle
-    this.x = width + this.d/2 - (millis() - this.timeStamp)/10;
-  }
-}
-
 function draw() {
-  background(0,0,0,50);
+  background(0,0,0,20);
   
   // update serial: request new data
   sendAndReceive();
