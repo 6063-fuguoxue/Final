@@ -124,7 +124,7 @@ void loop() {
       printer.println();
       printer.println("You are a very talented musician. . .");
       printer.println();
-      printer.println("Feel free to take me away");
+      printer.println("Feel free to take my notes away :D");
       printer.println();
       printer.println();
       printer.println();
